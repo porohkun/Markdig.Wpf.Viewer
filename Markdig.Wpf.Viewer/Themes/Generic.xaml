@@ -1,0 +1,266 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:styling="clr-namespace:MarkdigWpfViewer.Styling"
+                    xmlns:converters="clr-namespace:MarkdigWpfViewer.Converters"
+                    xmlns:vm="clr-namespace:MarkdigWpfViewer.ViewModels"
+                    xmlns:presenters="clr-namespace:MarkdigWpfViewer.Presenters"
+                    xmlns:local="clr-namespace:MarkdigWpfViewer">
+
+    <styling:MarkdownTemplateSelector x:Key="MarkdownTemplateSelector"/>
+    <converters:ThicknessMultiplierConverter x:Key="ThicknessMultiplierConverter"/>
+
+    <styling:MdStyleProvider x:Key="DefaultStyleProvider">
+
+            <!-- ======== Styles ======== -->
+
+            <styling:MdStyleProvider.InlineCodeStyle>
+                <styling:MarkdownInlineCodeStyle Background="Bisque"
+                                           Foreground="Brown"
+                                           BorderBrush="#dadada"
+                                           BorderThickness="1"
+                                           Padding="3,1,3,1"
+                                           CornerRadius="3"
+                                           FontFamily="Consolas"/>
+            </styling:MdStyleProvider.InlineCodeStyle>
+
+            <styling:MdStyleProvider.ParagraphStyle>
+                <styling:MdParagraphStyle Margin="0,0,0,0"
+                                          FontSize="14"
+                                          FontFamily="Segoe UI"
+                                          LinkForeground="Blue"/>
+            </styling:MdStyleProvider.ParagraphStyle>
+
+            <styling:MdStyleProvider.HeadingsStyle>
+                <styling:MarkdownHeadingStyleArray>
+                    <styling:MdHeadingStyle FontSize="28" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,14,0,0" FontWeight="Bold"/>
+                    <styling:MdHeadingStyle FontSize="24" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,12,0,0" FontWeight="Bold"/>
+                    <styling:MdHeadingStyle FontSize="20" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,10,0,0" FontWeight="SemiBold"/>
+                    <styling:MdHeadingStyle FontSize="18" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,8,0,0" FontWeight="SemiBold"/>
+                    <styling:MdHeadingStyle FontSize="16" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,8,0,0" FontWeight="SemiBold"/>
+                    <styling:MdHeadingStyle FontSize="14" FontFamily="Segoe UI" LinkForeground="Blue" Margin="0,8,0,0" FontWeight="SemiBold"/>
+                </styling:MarkdownHeadingStyleArray>
+            </styling:MdStyleProvider.HeadingsStyle>
+
+            <styling:MdStyleProvider.CodeBlockStyle>
+                <styling:MdCodeBlockStyle Background="#f9f9f9"
+                                                BorderBrush="#dadada"
+                                                BorderThickness="1"
+                                                Padding="12"
+                                                CornerRadius="4"
+                                                FontSize="14"
+                                                FontFamily="Consolas"/>
+            </styling:MdStyleProvider.CodeBlockStyle>
+
+            <styling:MdStyleProvider.TableStyle>
+                <styling:MdTableStyle BorderBrush="#dadada"
+                                            BorderThickness="1"
+                                            HeaderBackground="#dfdfdf"
+                                            CellPadding="8,4"/>
+            </styling:MdStyleProvider.TableStyle>
+
+            <styling:MdStyleProvider.QuoteStyle>
+                <styling:MdQuoteStyle BorderBrush="#dadada"
+                                            BorderThickness="6,0,0,0"
+                                            Padding="6,0,0,0"
+                                            Margin="0,0,0,4"/>
+            </styling:MdStyleProvider.QuoteStyle>
+
+            <styling:MdStyleProvider.ListStyle>
+                <styling:MdListStyle Margin="4,0,0,0"
+                                           MarkerWidth="16"
+                                           ItemSpacing="0,0,4,0"/>
+            </styling:MdStyleProvider.ListStyle>
+
+            <styling:MdStyleProvider.BlankLineStyle>
+                <styling:MdBlankLineStyle Height="14"/>
+            </styling:MdStyleProvider.BlankLineStyle>
+
+            <!-- ======== Templates ======== -->
+
+            <styling:MdStyleProvider.ParagraphTemplate>
+                <DataTemplate DataType="{x:Type vm:ParagraphVm}">
+                    <presenters:MdTextBlock Runs="{Binding Inlines}"
+                                                  TextWrapping="Wrap"
+                                                  Margin="{Binding Style.Margin}"
+                                                  FontFamily="{Binding Style.FontFamily}"
+                                                  FontSize="{Binding Style.FontSize}"
+                                                  InlineCodeStyle="{Binding Style.InlineCodeStyle}"/>
+                </DataTemplate>
+            </styling:MdStyleProvider.ParagraphTemplate>
+
+            <styling:MdStyleProvider.HeadingTemplate>
+                <DataTemplate DataType="{x:Type vm:HeadingVm}">
+                    <presenters:MdTextBlock Runs="{Binding Inlines}"
+                                                  TextWrapping="Wrap"
+                                                  Margin="{Binding Style.Margin}"
+                                                  FontFamily="{Binding Style.FontFamily}"
+                                                  FontSize="{Binding Style.FontSize}"
+                                                  FontWeight="{Binding Style.FontWeight}"
+                                                  InlineCodeStyle="{Binding Style.InlineCodeStyle}"/>
+                </DataTemplate>
+            </styling:MdStyleProvider.HeadingTemplate>
+
+            <styling:MdStyleProvider.CodeBlockTemplate>
+                <DataTemplate DataType="{x:Type vm:CodeBlockVm}">
+                    <Border Margin="0"
+                            Padding="{Binding Style.Padding}"
+                            CornerRadius="{Binding Style.CornerRadius}"
+                            BorderThickness="{Binding Style.BorderThickness}"
+                            BorderBrush="{Binding Style.BorderBrush}"
+                            Background="{Binding Style.Background}">
+
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                                      VerticalScrollBarVisibility="Disabled">
+
+                            <TextBlock Text="{Binding Code}"
+                                       FontFamily="{Binding Style.FontFamily}"
+                                       FontSize="{Binding Style.FontSize}"
+                                       TextWrapping="WrapWithOverflow"/>
+                        </ScrollViewer>
+
+                    </Border>
+                </DataTemplate>
+            </styling:MdStyleProvider.CodeBlockTemplate>
+
+            <styling:MdStyleProvider.QuoteTemplate>
+                <DataTemplate DataType="{x:Type vm:QuoteVm}">
+                    <Border BorderThickness="{Binding Style.BorderThickness}"
+                            BorderBrush="{Binding Style.BorderBrush}"
+                            Padding="{Binding Style.Padding}"
+                            Margin="{Binding Style.Margin}">
+                        <ItemsControl ItemsSource="{Binding Blocks}" ItemTemplateSelector="{StaticResource MarkdownTemplateSelector}"/>
+                    </Border>
+                </DataTemplate>
+            </styling:MdStyleProvider.QuoteTemplate>
+
+            <styling:MdStyleProvider.ListTemplate>
+                <DataTemplate DataType="{x:Type vm:ListVm}">
+                    <ItemsControl ItemsSource="{Binding Items}"
+                                  ItemTemplateSelector="{Binding MarkdownTemplateSelector}"
+                                  Margin="{Binding Style.Margin}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </DataTemplate>
+            </styling:MdStyleProvider.ListTemplate>
+
+            <styling:MdStyleProvider.ListItemTemplate>
+                <DataTemplate DataType="{x:Type vm:ListItemVm}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{Binding Style.MarkerWidth}"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding MarkerText}"
+                                   Margin="{Binding Style.ItemSpacing}" />
+                        <ItemsControl Grid.Column="1"
+                                      ItemsSource="{Binding Blocks}"
+                                      ItemTemplateSelector="{Binding MarkdownTemplateSelector}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </Grid>
+                </DataTemplate>
+            </styling:MdStyleProvider.ListItemTemplate>
+
+            <styling:MdStyleProvider.TableTemplate>
+                <DataTemplate DataType="{x:Type vm:TableVm}">
+                    <Border Margin="0,0,0,8"
+                            HorizontalAlignment="Left"
+                            BorderBrush="{Binding Style.BorderBrush}"
+                            BorderThickness="{Binding Style.BorderThickness}">
+                        <presenters:MdTablePresenter Table="{Binding}">
+                            <presenters:MdTablePresenter.CellTemplate>
+                                <DataTemplate DataType="{x:Type vm:TableCellVm}">
+                                    <Border BorderBrush="{Binding Style.BorderBrush}"
+                                        BorderThickness="{Binding Style.BorderThickness}"
+                                        Padding="{Binding Style.CellPadding}">
+                                        <presenters:MdTextBlock Runs="{Binding Inlines}"
+                                                         TextWrapping="Wrap"
+                                                         Margin="{Binding Style.ParagraphStyle.Margin}"
+                                                         FontFamily="{Binding Style.ParagraphStyle.FontFamily}"
+                                                         FontSize="{Binding Style.ParagraphStyle.FontSize}"
+                                                         InlineCodeStyle="{Binding Style.ParagraphStyle.InlineCodeStyle}"/>
+                                    </Border>
+                                </DataTemplate>
+                            </presenters:MdTablePresenter.CellTemplate>
+                            <presenters:MdTablePresenter.HeaderTemplate>
+                                <DataTemplate DataType="{x:Type vm:TableCellVm}">
+                                    <Border BorderBrush="{Binding Style.BorderBrush}"
+                                        BorderThickness="{Binding Style.BorderThickness}"
+                                        Padding="{Binding Style.CellPadding}"
+                                        Background="{Binding Style.HeaderBackground}">
+                                        <presenters:MdTextBlock Runs="{Binding Inlines}"
+                                                         TextWrapping="Wrap"
+                                                         Margin="{Binding Style.ParagraphStyle.Margin}"
+                                                         FontFamily="{Binding Style.ParagraphStyle.FontFamily}"
+                                                         FontSize="{Binding Style.ParagraphStyle.FontSize}"
+                                                         InlineCodeStyle="{Binding Style.ParagraphStyle.InlineCodeStyle}"/>
+                                    </Border>
+                                </DataTemplate>
+                            </presenters:MdTablePresenter.HeaderTemplate>
+                        </presenters:MdTablePresenter>
+                    </Border>
+                </DataTemplate>
+            </styling:MdStyleProvider.TableTemplate>
+
+            <styling:MdStyleProvider.HorizontalRuleTemplate>
+                <DataTemplate DataType="{x:Type vm:ThematicBreakVm}">
+                    <Separator>
+                        <Separator.Margin>
+                            <Binding Path="Style.Height"
+                                     Converter="{StaticResource ThicknessMultiplierConverter}">
+                                <Binding.ConverterParameter>
+                                    <Thickness Left="2" Top="0" Right="2" Bottom="1"/>
+                                </Binding.ConverterParameter>
+                            </Binding>
+                        </Separator.Margin>
+                    </Separator>
+                </DataTemplate>
+            </styling:MdStyleProvider.HorizontalRuleTemplate>
+
+            <styling:MdStyleProvider.BlankLineTemplate>
+                <DataTemplate DataType="{x:Type vm:BlankLineVm}">
+                    <Border Height="{Binding Style.Height}" Background="Transparent" />
+                </DataTemplate>
+            </styling:MdStyleProvider.BlankLineTemplate>
+
+        </styling:MdStyleProvider>
+
+    <Style TargetType="{x:Type local:MarkdownViewer}">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="StyleProvider" Value="{StaticResource DefaultStyleProvider}"/>
+        <Setter Property="ItemTemplateSelector" Value="{StaticResource MarkdownTemplateSelector}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:MarkdownViewer}">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        Padding="{TemplateBinding Padding}"
+                        SnapsToDevicePixels="True">
+
+                        <ItemsPresenter />
+
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
