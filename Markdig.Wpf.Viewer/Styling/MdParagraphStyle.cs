@@ -10,5 +10,5 @@ public record MdParagraphStyle : IMdStyle
     public double FontSize { get; init; } = 14;
     public required FontFamily FontFamily { get; init; }
     public required Brush LinkForeground { get; init; }
-    public MarkdownInlineCodeStyle? InlineCodeStyle { get; init; }
+    public MdInlineCodeStyle? InlineCodeStyle { get; init; }
 }

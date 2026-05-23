@@ -14,7 +14,7 @@
             <!-- ======== Styles ======== -->
 
             <styling:MdStyleProvider.InlineCodeStyle>
-                <styling:MarkdownInlineCodeStyle Background="Bisque"
+                <styling:MdInlineCodeStyle Background="Bisque"
                                            Foreground="Brown"
                                            BorderBrush="#dadada"
                                            BorderThickness="1"
@@ -140,7 +140,7 @@
                                   Margin="{Binding Style.Margin}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel />
+                                <VirtualizingStackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
@@ -161,7 +161,7 @@
                                       ItemTemplateSelector="{Binding MarkdownTemplateSelector}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
-                                    <StackPanel />
+                                    <VirtualizingStackPanel />
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                         </ItemsControl>
@@ -237,7 +237,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical"/>
+                    <VirtualizingStackPanel Orientation="Vertical"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

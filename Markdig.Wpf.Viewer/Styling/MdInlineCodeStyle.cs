@@ -3,7 +3,7 @@
 using System.Windows;
 using System.Windows.Media;
 
-public sealed record MarkdownInlineCodeStyle
+public sealed record MdInlineCodeStyle
 {
     public Brush Background { get; init; } = Brushes.Transparent;
     public Brush Foreground { get; init; } = Brushes.Black;

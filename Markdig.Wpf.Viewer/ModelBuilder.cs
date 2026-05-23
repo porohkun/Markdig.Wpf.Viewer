@@ -22,10 +22,6 @@ internal static class ModelBuilder
         MarkdownPipeline? pipeline = null,
         DataTemplateSelector? markdownTemplateSelector = null)
     {
-        //pipeline ??= DefaultPipeline;
-        //var document = Markdown.Parse(markdown ?? string.Empty, pipeline);
-        //return ConvertBlocks(document, depth: 0, markdownTemplateSelector ?? new MarkdownTemplateSelector());
-
         pipeline ??= DefaultPipeline;
         markdown ??= string.Empty;
         markdownTemplateSelector ??= new MarkdownTemplateSelector();

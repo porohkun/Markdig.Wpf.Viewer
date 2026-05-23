@@ -9,7 +9,7 @@ public interface IMdStyleProvider
 
     IReadOnlyList<MdHeadingStyle> HeadingsStyle { get; }
 
-    MarkdownInlineCodeStyle InlineCodeStyle { get; }
+    MdInlineCodeStyle InlineCodeStyle { get; }
 
     MdCodeBlockStyle CodeBlockStyle { get; }
 

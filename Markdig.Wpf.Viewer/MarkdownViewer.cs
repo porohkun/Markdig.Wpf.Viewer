@@ -40,8 +40,6 @@ public sealed class MarkdownViewer : ItemsControl
     public MarkdownViewer()
     {
         ItemsSource = _blocks;
-        //MarkdownStyling.SetStyleProvider(this, StyleProvider);
-        //Loaded += (_, _) => Rebuild();
     }
 
     public string Markdown

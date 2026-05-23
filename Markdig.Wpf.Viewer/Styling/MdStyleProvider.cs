@@ -24,7 +24,7 @@ internal sealed class MdStyleProvider : IMdStyleProvider
         set => Set(ref field, value, InsertInlineCodeIntoHeadings);
     }
 
-    public required MarkdownInlineCodeStyle InlineCodeStyle
+    public required MdInlineCodeStyle InlineCodeStyle
     {
         get;
         set => Set(ref field,

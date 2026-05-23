@@ -28,10 +28,10 @@ public class MdTextBlock : TextBlock
     public static readonly DependencyProperty InlineCodeStyleProperty =
         DependencyProperty.Register(
             nameof(InlineCodeStyle),
-            typeof(MarkdownInlineCodeStyle),
+            typeof(MdInlineCodeStyle),
             typeof(MdTextBlock),
             new FrameworkPropertyMetadata(
-                new MarkdownInlineCodeStyle { FontFamily = new("Consolas") },
+                new MdInlineCodeStyle { FontFamily = new("Consolas") },
                 FrameworkPropertyMetadataOptions.AffectsMeasure,
                 OnAnyPropertyChanged));
 
@@ -53,9 +53,9 @@ public class MdTextBlock : TextBlock
         set => SetValue(LinkForegroundProperty, value);
     }
 
-    public MarkdownInlineCodeStyle InlineCodeStyle
+    public MdInlineCodeStyle InlineCodeStyle
     {
-        get => (MarkdownInlineCodeStyle)GetValue(InlineCodeStyleProperty);
+        get => (MdInlineCodeStyle)GetValue(InlineCodeStyleProperty);
         set => SetValue(InlineCodeStyleProperty, value);
     }
 
