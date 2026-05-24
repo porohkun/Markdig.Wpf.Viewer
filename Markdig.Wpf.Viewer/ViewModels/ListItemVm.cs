@@ -2,7 +2,5 @@
 
 using Abstractions;
 
-public sealed record ListItemVm(
-    string MarkerText,
-    IReadOnlyList<IMdBlockVm> Blocks)
+public sealed record ListItemVm(string MarkerText, IReadOnlyList<IMdBlockVm> Blocks)
     : IMdBlockVm;

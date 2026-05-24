@@ -1,13 +1,11 @@
 ﻿namespace MarkdigWpfViewer;
 
 using System.Text;
-using System.Windows.Controls;
 using Abstractions;
 using Markdig;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
-using Styling;
 using ViewModels;
 
 internal static class ModelBuilder
@@ -18,13 +16,10 @@ internal static class ModelBuilder
 
     public static IReadOnlyList<IMdBlockVm> Parse(
         string markdown,
-        IMdStyleProvider styleProvider,
-        MarkdownPipeline? pipeline = null,
-        DataTemplateSelector? markdownTemplateSelector = null)
+        MarkdownPipeline? pipeline = null)
     {
         pipeline ??= DefaultPipeline;
         markdown ??= string.Empty;
-        markdownTemplateSelector ??= new MarkdownTemplateSelector();
 
         var result = new List<IMdBlockVm>();
 
@@ -37,7 +32,7 @@ internal static class ModelBuilder
             }
 
             var document = Markdown.Parse(segment.Text!, pipeline);
-            result.AddRange(ConvertBlocks(document, depth: 0, markdownTemplateSelector, styleProvider));
+            result.AddRange(ConvertBlocks(document, depth: 0));
         }
 
         return result;
@@ -45,9 +40,7 @@ internal static class ModelBuilder
 
     private static IReadOnlyList<IMdBlockVm> ConvertBlocks(
         ContainerBlock container,
-        int depth,
-        DataTemplateSelector markdownTemplateSelector,
-        IMdStyleProvider styleProvider)
+        int depth)
     {
         var blocks = new List<IMdBlockVm>();
 
@@ -56,7 +49,7 @@ internal static class ModelBuilder
             if (obj == null)
                 continue;
 
-            var converted = ConvertBlock(obj, depth, markdownTemplateSelector, styleProvider);
+            var converted = ConvertBlock(obj, depth);
             if (converted is not null)
             {
                 blocks.Add(converted);
@@ -68,20 +61,18 @@ internal static class ModelBuilder
 
     private static IMdBlockVm? ConvertBlock(
         Block block,
-        int depth,
-        DataTemplateSelector markdownTemplateSelector,
-        IMdStyleProvider styleProvider)
+        int depth)
     {
         return block switch
         {
-            ParagraphBlock paragraph => new ParagraphVm(ConvertInlines(paragraph.Inline, styleProvider)),
-            HeadingBlock heading => new HeadingVm(heading.Level, ConvertInlines(heading.Inline, styleProvider)),
+            ParagraphBlock paragraph => new ParagraphVm(ConvertInlines(paragraph.Inline)),
+            HeadingBlock heading => new HeadingVm(heading.Level, ConvertInlines(heading.Inline)),
             ThematicBreakBlock => new ThematicBreakVm(),
             FencedCodeBlock fenced => ConvertCodeBlock(fenced),
             CodeBlock code => ConvertCodeBlock(code),
-            QuoteBlock quote => new QuoteVm(ConvertBlocks(quote, depth + 1, markdownTemplateSelector, styleProvider)),
-            ListBlock list => ConvertList(list, depth, markdownTemplateSelector, styleProvider),
-            Table table => ConvertTable(table, styleProvider),
+            QuoteBlock quote => new QuoteVm(ConvertBlocks(quote, depth + 1)),
+            ListBlock list => ConvertList(list, depth),
+            Table table => ConvertTable(table),
             _ => null
         };
     }
@@ -96,11 +87,7 @@ internal static class ModelBuilder
         return new(info, language, code);
     }
 
-    private static ListVm ConvertList(
-        ListBlock list,
-        int depth,
-        DataTemplateSelector markdownTemplateSelector,
-        IMdStyleProvider styleProvider)
+    private static ListVm ConvertList(ListBlock list, int depth)
     {
         var ordered = TryGetBoolProperty(list, "IsOrdered")
                       ?? TryGetBoolProperty(list, "Ordered")
@@ -120,7 +107,7 @@ internal static class ModelBuilder
                 continue;
             }
 
-            var blocks = ConvertBlocks(item, depth + 1, markdownTemplateSelector, styleProvider);
+            var blocks = ConvertBlocks(item, depth + 1);
             var markerText = ordered ? $"{start + index}." : "•";
             items.Add(new(markerText, blocks));
             index++;
@@ -129,7 +116,7 @@ internal static class ModelBuilder
         return new(ordered, start, depth, items);
     }
 
-    private static TableVm ConvertTable(Table table, IMdStyleProvider styleProvider)
+    private static TableVm ConvertTable(Table table)
     {
         var rows = new List<TableRowVm>();
         var maxColumns = table.ColumnDefinitions.Count;
@@ -146,7 +133,7 @@ internal static class ModelBuilder
             {
                 if (row[c] is TableCell cell)
                 {
-                    cells.Add(new(GetCellInlines(cell, styleProvider)));
+                    cells.Add(new(GetCellInlines(cell)));
                 }
             }
 
@@ -173,31 +160,27 @@ internal static class ModelBuilder
         return new(maxColumns, rows);
     }
 
-    private static IReadOnlyList<InlineVm> GetCellInlines(TableCell cell, IMdStyleProvider styleProvider)
+    private static IReadOnlyList<InlineVm> GetCellInlines(TableCell cell)
     {
         var paragraph = cell.Descendants<ParagraphBlock>().FirstOrDefault();
         return paragraph?.Inline is { } inline
-            ? ConvertInlines(inline, styleProvider)
+            ? ConvertInlines(inline)
             : [];
     }
 
-    private static IReadOnlyList<InlineVm> ConvertInlines(ContainerInline? container, IMdStyleProvider styleProvider)
+    private static IReadOnlyList<InlineVm> ConvertInlines(ContainerInline? container)
     {
         var result = new List<InlineVm>();
 
         if (container?.FirstChild is not null)
         {
-            WalkInline(container.FirstChild, new(), result, styleProvider);
+            WalkInline(container.FirstChild, new(), result);
         }
 
         return result;
     }
 
-    private static void WalkInline(
-        Inline? current,
-        InlineState state,
-        List<InlineVm> output,
-        IMdStyleProvider styleProvider)
+    private static void WalkInline(Inline? current, InlineState state, List<InlineVm> output)
     {
         for (var node = current; node is not null; node = node.NextSibling)
         {
@@ -255,13 +238,13 @@ internal static class ModelBuilder
 
                 case AutolinkInline autolink:
                 {
-                    AddLink(autolink.Url, autolink, state, output, styleProvider);
+                    AddLink(autolink.Url, autolink, state, output);
                     break;
                 }
 
                 case LinkInline { IsImage: false } link:
                 {
-                    AddLink(link.Url, link.FirstChild, state, output, styleProvider);
+                    AddLink(link.Url, link.FirstChild, state, output);
                     break;
                 }
 
@@ -281,7 +264,7 @@ internal static class ModelBuilder
 
                     if (emphasis.FirstChild is not null)
                     {
-                        WalkInline(emphasis.FirstChild, childState, output, styleProvider);
+                        WalkInline(emphasis.FirstChild, childState, output);
                     }
 
                     break;
@@ -289,7 +272,7 @@ internal static class ModelBuilder
 
                 case ContainerInline { FirstChild: not null } container:
                 {
-                    WalkInline(container.FirstChild, state, output, styleProvider);
+                    WalkInline(container.FirstChild, state, output);
                     break;
                 }
 
@@ -313,19 +296,14 @@ internal static class ModelBuilder
         }
     }
 
-    private static void AddLink(
-        string? url,
-        Inline? firstChild,
-        InlineState state,
-        List<InlineVm> output,
-        IMdStyleProvider styleProvider)
+    private static void AddLink(string? url, Inline? firstChild, InlineState state, List<InlineVm> output)
     {
         var uri = TryCreateUri(url);
         var linkedState = state with { Hyperlink = uri };
 
         if (firstChild is not null)
         {
-            WalkInline(firstChild, linkedState, output, styleProvider);
+            WalkInline(firstChild, linkedState, output);
             return;
         }
 

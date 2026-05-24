@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Abstractions;
 using Markdig;
-using Styling;
 
 public sealed class MarkdownViewer : ItemsControl
 {
@@ -42,7 +41,7 @@ public sealed class MarkdownViewer : ItemsControl
         ItemsSource = _blocks;
     }
 
-    public string Markdown
+    public string? Markdown
     {
         get => (string)GetValue(MarkdownProperty);
         set => SetValue(MarkdownProperty, value);
@@ -60,19 +59,11 @@ public sealed class MarkdownViewer : ItemsControl
         set => SetValue(StyleProviderProperty, value);
     }
 
-    public IReadOnlyList<IMdBlockVm> Blocks => _blocks;
-
     private static void OnMarkdownChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         => ((MarkdownViewer)d).Rebuild();
 
     private static void OnStyleProviderChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var viewer = (MarkdownViewer)d;
-        MarkdownStyling.SetStyleProvider(
-            viewer,
-            (IMdStyleProvider?)e.NewValue);
-        ((MarkdownViewer)d).Rebuild();
-    }
+        => ((MarkdownViewer)d).Rebuild();
 
     private void Rebuild()
     {
@@ -81,10 +72,8 @@ public sealed class MarkdownViewer : ItemsControl
         if (StyleProvider is null)
             return;
 
-        var parsed = ModelBuilder.Parse(Markdown ?? string.Empty, StyleProvider, MarkdownPipeline);
+        var parsed = ModelBuilder.Parse(Markdown ?? string.Empty);
         foreach (var block in parsed)
-        {
             _blocks.Add(block);
-        }
     }
 }

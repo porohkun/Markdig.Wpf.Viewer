@@ -1,19 +1,17 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:s="clr-namespace:MarkdigWpfViewer.Styling"
-                    xmlns:converters="clr-namespace:MarkdigWpfViewer.Converters"
                     xmlns:vm="clr-namespace:MarkdigWpfViewer.ViewModels"
                     xmlns:p="clr-namespace:MarkdigWpfViewer.Presenters"
                     xmlns:local="clr-namespace:MarkdigWpfViewer"
                     xmlns:sys="clr-namespace:System;assembly=System.Runtime">
 
     <s:MarkdownTemplateSelector x:Key="Md.TemplateSelector"/>
-    <converters:ThicknessMultiplierConverter x:Key="ThicknessMultiplierConverter"/>
 
     <!-- ======== Md.Paragraph ======== -->
     <FontFamily   x:Key="Md.Paragraph.FontFamily">Segoe UI</FontFamily>
     <sys:Double   x:Key="Md.Paragraph.FontSize">14</sys:Double>
-    <!--<Brush        x:Key="Md.Paragraph.Foreground">Black</Brush>-->
+    <Brush        x:Key="Md.Paragraph.Foreground">Black</Brush>
     <Brush        x:Key="Md.Paragraph.LinkForeground">Blue</Brush>
 
     <!-- ======== Md.InlineCode ======== -->
@@ -28,7 +26,7 @@
 
     <!-- ======== Md.Heading ======== -->
     <FontFamily   x:Key="Md.Heading.FontFamily">Segoe UI</FontFamily>
-    <!--<Brush        x:Key="Md.Heading.Foreground">Black</Brush>-->
+    <Brush        x:Key="Md.Heading.Foreground">Black</Brush>
     <Brush        x:Key="Md.Heading.LinkForeground">Blue</Brush>
 
     <Thickness    x:Key="Md.Heading1.Margin">0,14,0,0</Thickness>
@@ -130,7 +128,7 @@
     <Style x:Key="Md.Paragraph.Style" TargetType="{x:Type p:MdTextBlock}">
         <Setter Property="FontFamily" Value="{DynamicResource Md.Paragraph.FontFamily}" />
         <Setter Property="FontSize" Value="{DynamicResource Md.Paragraph.FontSize}" />
-        <!--<Setter Property="Foreground" Value="{DynamicResource Md.Paragraph.Foreground}" />-->
+        <Setter Property="Foreground" Value="{DynamicResource Md.Paragraph.Foreground}" />
         <Setter Property="LinkForeground" Value="{DynamicResource Md.Paragraph.LinkForeground}" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="InlineCodeStyle" Value="{DynamicResource Md.Paragraph.InlineCodeStyle}"/>
@@ -138,7 +136,7 @@
 
     <Style x:Key="Md.Heading.Style" TargetType="{x:Type p:MdTextBlock}">
         <Setter Property="FontFamily" Value="{DynamicResource Md.Heading.FontFamily}" />
-        <!--<Setter Property="Foreground" Value="{DynamicResource Md.Heading.Foreground}" />-->
+        <Setter Property="Foreground" Value="{DynamicResource Md.Heading.Foreground}" />
         <Setter Property="LinkForeground" Value="{DynamicResource Md.Heading.LinkForeground}" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Margin" Value="{DynamicResource Md.Heading6.Margin}" />
@@ -195,6 +193,7 @@
                                       VerticalScrollBarVisibility="Disabled">
 
                             <TextBlock Text="{TemplateBinding Code}"
+                                       Foreground="{DynamicResource Md.CodeBlock.Foreground}"
                                        FontFamily="{DynamicResource Md.CodeBlock.FontFamily}"
                                        FontSize="{DynamicResource Md.CodeBlock.FontSize}"
                                        TextWrapping="WrapWithOverflow"/>

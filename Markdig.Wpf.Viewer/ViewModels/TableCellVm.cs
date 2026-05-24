@@ -2,6 +2,5 @@
 
 using Abstractions;
 
-public sealed record TableCellVm(
-    IReadOnlyList<InlineVm> Inlines)
+public sealed record TableCellVm(IReadOnlyList<InlineVm> Inlines)
     : IMdBlockVm;

@@ -2,9 +2,5 @@
 
 using Abstractions;
 
-public sealed record ListVm(
-    bool Ordered,
-    int Start,
-    int Depth,
-    IReadOnlyList<ListItemVm> Items)
+public sealed record ListVm(bool Ordered, int Start, int Depth, IReadOnlyList<ListItemVm> Items)
     : IMdBlockVm;

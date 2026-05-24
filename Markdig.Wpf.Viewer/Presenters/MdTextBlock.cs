@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Navigation;
-using Styling;
 using ViewModels;
 
 public class MdTextBlock : TextBlock
@@ -56,21 +55,8 @@ public class MdTextBlock : TextBlock
         set => SetValue(InlineCodeStyleProperty, value);
     }
 
-    //private IMdStyleProvider Provider => MarkdownStyling.GetStyleProvider(this)!;
-
     protected static void OnAnyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         => ((MdTextBlock)d).Rebuild();
-
-    protected virtual void ApplyStyle(Inline inline, MdInlineStyle style, bool hyperlink)
-    {
-        inline.FontFamily = style.FontFamily;
-        inline.FontSize = style.FontSize;
-
-        if (hyperlink)
-            inline.Foreground = style.LinkForeground;
-    }
-
-    //protected virtual MdInlineStyle GetInlineStyle() => Provider.Inline;
 
     private static Span Wrap(Inline inner, Action<Span> configure)
     {
@@ -95,9 +81,6 @@ public class MdTextBlock : TextBlock
             // deliberately ignored
         }
     }
-
-    //private void ApplyStyle(Inline inline, bool hyperlink = false)
-    //    => ApplyStyle(inline, GetInlineStyle(), hyperlink);
 
     private void Rebuild()
     {
