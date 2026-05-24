@@ -246,6 +246,7 @@
                         <TextBlock Text="{Binding MarkerText}"
                                    FontSize="{DynamicResource Md.Paragraph.FontSize}"
                                    FontFamily="{DynamicResource Md.Paragraph.FontFamily}"
+                                   Foreground="{DynamicResource Md.Paragraph.Foreground}"
                                    Margin="{DynamicResource Md.List.ItemSpacing}" />
                         <ItemsControl Grid.Column="1" ItemsSource="{Binding Blocks}" ItemTemplateSelector="{DynamicResource Md.TemplateSelector}">
                             <ItemsControl.ItemsPanel>
