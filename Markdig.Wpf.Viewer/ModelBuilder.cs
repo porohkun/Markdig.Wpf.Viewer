@@ -32,7 +32,7 @@ internal static class ModelBuilder
         {
             if (segment.IsBlank)
             {
-                result.Add(new BlankLineVm(styleProvider.BlankLineStyle));
+                result.Add(new BlankLineVm());
                 continue;
             }
 
@@ -53,13 +53,13 @@ internal static class ModelBuilder
 
         foreach (var obj in container)
         {
-            if (obj is Block block)
+            if (obj == null)
+                continue;
+
+            var converted = ConvertBlock(obj, depth, markdownTemplateSelector, styleProvider);
+            if (converted is not null)
             {
-                var converted = ConvertBlock(block, depth, markdownTemplateSelector, styleProvider);
-                if (converted is not null)
-                {
-                    blocks.Add(converted);
-                }
+                blocks.Add(converted);
             }
         }
 
@@ -74,33 +74,26 @@ internal static class ModelBuilder
     {
         return block switch
         {
-            ParagraphBlock paragraph => new ParagraphVm(
-                styleProvider.ParagraphStyle,
-                ConvertInlines(paragraph.Inline, styleProvider)),
-            HeadingBlock heading => new HeadingVm(
-                styleProvider.HeadingsStyle[Math.Clamp(heading.Level - 1, 0, styleProvider.HeadingsStyle.Count - 1)],
-                heading.Level,
-                ConvertInlines(heading.Inline, styleProvider)),
-            ThematicBreakBlock => new ThematicBreakVm(styleProvider.BlankLineStyle),
-            FencedCodeBlock fenced => ConvertCodeBlock(fenced, styleProvider),
-            CodeBlock code => ConvertCodeBlock(code, styleProvider),
-            QuoteBlock quote => new QuoteVm(
-                styleProvider.QuoteStyle,
-                ConvertBlocks(quote, depth + 1, markdownTemplateSelector, styleProvider)),
+            ParagraphBlock paragraph => new ParagraphVm(ConvertInlines(paragraph.Inline, styleProvider)),
+            HeadingBlock heading => new HeadingVm(heading.Level, ConvertInlines(heading.Inline, styleProvider)),
+            ThematicBreakBlock => new ThematicBreakVm(),
+            FencedCodeBlock fenced => ConvertCodeBlock(fenced),
+            CodeBlock code => ConvertCodeBlock(code),
+            QuoteBlock quote => new QuoteVm(ConvertBlocks(quote, depth + 1, markdownTemplateSelector, styleProvider)),
             ListBlock list => ConvertList(list, depth, markdownTemplateSelector, styleProvider),
             Table table => ConvertTable(table, styleProvider),
             _ => null
         };
     }
 
-    private static CodeBlockVm ConvertCodeBlock(CodeBlock block, IMdStyleProvider styleProvider)
+    private static CodeBlockVm ConvertCodeBlock(CodeBlock block)
     {
         var code = GetLeafText(block);
         var info = TryGetStringProperty(block, "InfoString")
                    ?? TryGetStringProperty(block, "Info");
 
         var language = ParseLanguage(info);
-        return new(styleProvider.CodeBlockStyle, info, language, code);
+        return new(info, language, code);
     }
 
     private static ListVm ConvertList(
@@ -129,11 +122,11 @@ internal static class ModelBuilder
 
             var blocks = ConvertBlocks(item, depth + 1, markdownTemplateSelector, styleProvider);
             var markerText = ordered ? $"{start + index}." : "•";
-            items.Add(new(styleProvider.ListStyle, markerText, blocks, markdownTemplateSelector));
+            items.Add(new(markerText, blocks));
             index++;
         }
 
-        return new(styleProvider.ListStyle, ordered, start, depth, items, markdownTemplateSelector);
+        return new(ordered, start, depth, items);
     }
 
     private static TableVm ConvertTable(Table table, IMdStyleProvider styleProvider)
@@ -153,13 +146,13 @@ internal static class ModelBuilder
             {
                 if (row[c] is TableCell cell)
                 {
-                    cells.Add(new(styleProvider.TableStyle, GetCellInlines(cell, styleProvider)));
+                    cells.Add(new(GetCellInlines(cell, styleProvider)));
                 }
             }
 
             maxColumns = Math.Max(maxColumns, cells.Count);
 
-            rows.Add(new(styleProvider.TableStyle, IsHeader: r == 0, Cells: cells));
+            rows.Add(new(IsHeader: r == 0, Cells: cells));
         }
 
         foreach (var row in rows)
@@ -168,7 +161,7 @@ internal static class ModelBuilder
             {
                 if (row.Cells is List<TableCellVm> list)
                 {
-                    list.Add(new(styleProvider.TableStyle, []));
+                    list.Add(new([]));
                 }
                 else
                 {
@@ -177,7 +170,7 @@ internal static class ModelBuilder
             }
         }
 
-        return new(styleProvider.TableStyle, maxColumns, rows);
+        return new(maxColumns, rows);
     }
 
     private static IReadOnlyList<InlineVm> GetCellInlines(TableCell cell, IMdStyleProvider styleProvider)
@@ -294,7 +287,7 @@ internal static class ModelBuilder
                     break;
                 }
 
-                case ContainerInline container when container.FirstChild is not null:
+                case ContainerInline { FirstChild: not null } container:
                 {
                     WalkInline(container.FirstChild, state, output, styleProvider);
                     break;

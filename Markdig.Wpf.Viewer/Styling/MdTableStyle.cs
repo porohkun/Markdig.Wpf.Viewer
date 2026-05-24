@@ -10,5 +10,4 @@ public sealed record MdTableStyle : IMdStyle
     public Thickness BorderThickness { get; init; }
     public Brush HeaderBackground { get; init; } = Brushes.Transparent;
     public Thickness CellPadding { get; init; }
-    public MdParagraphStyle? ParagraphStyle { get; init; }
 }

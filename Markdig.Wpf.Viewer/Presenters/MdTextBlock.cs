@@ -28,12 +28,9 @@ public class MdTextBlock : TextBlock
     public static readonly DependencyProperty InlineCodeStyleProperty =
         DependencyProperty.Register(
             nameof(InlineCodeStyle),
-            typeof(MdInlineCodeStyle),
+            typeof(Style),
             typeof(MdTextBlock),
-            new FrameworkPropertyMetadata(
-                new MdInlineCodeStyle { FontFamily = new("Consolas") },
-                FrameworkPropertyMetadataOptions.AffectsMeasure,
-                OnAnyPropertyChanged));
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.AffectsMeasure, OnAnyPropertyChanged));
 
     public MdTextBlock()
     {
@@ -53,9 +50,9 @@ public class MdTextBlock : TextBlock
         set => SetValue(LinkForegroundProperty, value);
     }
 
-    public MdInlineCodeStyle InlineCodeStyle
+    public Style InlineCodeStyle
     {
-        get => (MdInlineCodeStyle)GetValue(InlineCodeStyleProperty);
+        get => (Style)GetValue(InlineCodeStyleProperty);
         set => SetValue(InlineCodeStyleProperty, value);
     }
 
@@ -171,27 +168,13 @@ public class MdTextBlock : TextBlock
 
     private Inline CreateInlineCode(string text)
     {
-        var style = InlineCodeStyle;
-
-        var tb = new TextBlock
+        var presenter = new InlineCodePresenter
         {
             Text = text,
-            FontSize = FontSize,
-            FontFamily = style.FontFamily,
-            Foreground = style.Foreground,
-            Padding = style.Padding
+            Style = InlineCodeStyle
         };
 
-        var border = new Border
-        {
-            Child = tb,
-            Background = style.Background,
-            BorderBrush = style.BorderBrush,
-            BorderThickness = style.BorderThickness,
-            CornerRadius = style.CornerRadius
-        };
-
-        return new InlineUIContainer(border)
+        return new InlineUIContainer(presenter)
         {
             BaselineAlignment = BaselineAlignment.Center
         };
