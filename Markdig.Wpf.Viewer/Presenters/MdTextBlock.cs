@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Navigation;
 using ViewModels;
 
 public class MdTextBlock : TextBlock
@@ -33,7 +32,6 @@ public class MdTextBlock : TextBlock
 
     public MdTextBlock()
     {
-        AddHandler(Hyperlink.RequestNavigateEvent, new RequestNavigateEventHandler(OnRequestNavigate));
         Rebuild();
     }
 
@@ -66,15 +64,21 @@ public class MdTextBlock : TextBlock
         return span;
     }
 
-    private static void OnRequestNavigate(object sender, RequestNavigateEventArgs e)
+    /// <summary>
+    /// Ссылка наружу — системным обработчиком. Адрес отдаётся исходной строкой, а не через
+    /// <see cref="Uri"/>: <c>www.example.com</c> оболочка открывает браузером, а нормализация
+    /// такого адреса ничего не добавляет.
+    /// </summary>
+    private static void OpenExternal(string href)
     {
+        if (string.IsNullOrWhiteSpace(href))
+        {
+            return;
+        }
+
         try
         {
-            if (e.Uri is not null)
-            {
-                Process.Start(new ProcessStartInfo(e.Uri.ToString()) { UseShellExecute = true });
-                e.Handled = true;
-            }
+            Process.Start(new ProcessStartInfo(href) { UseShellExecute = true });
         }
         catch
         {
@@ -142,11 +146,34 @@ public class MdTextBlock : TextBlock
                 Foreground = LinkForeground
             };
 
+            // Подписка на каждую ссылку отдельно, а не одна на весь блок: исходный адрес
+            // (inline.Href) в RequestNavigateEventArgs не поедет, а именно он нужен обработчику
+            // своих ссылок — Uri их нормализует.
+            var href = inline.Href ?? inline.Hyperlink.ToString();
+            link.RequestNavigate += (_, e) =>
+            {
+                e.Handled = true;
+                Navigate(href, e.Uri);
+            };
+
             link.Inlines.Add(current);
             current = link;
         }
 
         Inlines.Add(current);
+    }
+
+    /// <summary>
+    /// Сначала спрашиваем приложение (<see cref="MarkdownLink.NavigateEvent"/> всплывает до
+    /// любого предка вьюера), и только необработанную ссылку открываем наружу.
+    /// </summary>
+    private void Navigate(string href, Uri? uri)
+    {
+        var args = new MarkdownLinkEventArgs(MarkdownLink.NavigateEvent, this, href, uri);
+        RaiseEvent(args);
+
+        if (!args.Handled)
+            OpenExternal(href);
     }
 
     private Inline CreateInlineCode(string text)

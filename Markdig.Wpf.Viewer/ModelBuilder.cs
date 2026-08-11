@@ -191,7 +191,14 @@ internal static class ModelBuilder
                     var text = literal.Content.ToString();
                     if (!string.IsNullOrEmpty(text))
                     {
-                        output.Add(new(text, state.Bold, state.Italic, state.Strike, state.Code, state.Hyperlink));
+                        output.Add(new(
+                            text,
+                            state.Bold,
+                            state.Italic,
+                            state.Strike,
+                            state.Code,
+                            state.Hyperlink,
+                            Href: state.Href));
                     }
 
                     break;
@@ -208,7 +215,8 @@ internal static class ModelBuilder
                             state.Strike,
                             state.Code,
                             state.Hyperlink,
-                            LineBreak: true));
+                            LineBreak: true,
+                            Href: state.Href));
                     }
                     else
                     {
@@ -218,7 +226,8 @@ internal static class ModelBuilder
                             state.Italic,
                             state.Strike,
                             state.Code,
-                            state.Hyperlink));
+                            state.Hyperlink,
+                            Href: state.Href));
                     }
 
                     break;
@@ -232,7 +241,8 @@ internal static class ModelBuilder
                         state.Italic,
                         state.Strike,
                         Code: true,
-                        state.Hyperlink));
+                        Hyperlink: state.Hyperlink,
+                        Href: state.Href));
                     break;
                 }
 
@@ -287,7 +297,8 @@ internal static class ModelBuilder
                             state.Italic,
                             state.Strike,
                             state.Code,
-                            state.Hyperlink));
+                            state.Hyperlink,
+                            Href: state.Href));
                     }
 
                     break;
@@ -299,7 +310,7 @@ internal static class ModelBuilder
     private static void AddLink(string? url, Inline? firstChild, InlineState state, List<InlineVm> output)
     {
         var uri = TryCreateUri(url);
-        var linkedState = state with { Hyperlink = uri };
+        var linkedState = state with { Hyperlink = uri, Href = url };
 
         if (firstChild is not null)
         {
@@ -309,7 +320,7 @@ internal static class ModelBuilder
 
         if (!string.IsNullOrWhiteSpace(url))
         {
-            output.Add(new(url, state.Bold, state.Italic, state.Strike, state.Code, uri));
+            output.Add(new(url, state.Bold, state.Italic, state.Strike, state.Code, uri, Href: url));
         }
     }
 
@@ -398,7 +409,8 @@ internal static class ModelBuilder
         bool Italic = false,
         bool Strike = false,
         bool Code = false,
-        Uri? Hyperlink = null);
+        Uri? Hyperlink = null,
+        string? Href = null);
 
     private readonly record struct MarkdownSegment(string? Text, bool IsBlank);
 }
