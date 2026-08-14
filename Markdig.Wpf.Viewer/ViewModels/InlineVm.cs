@@ -1,4 +1,4 @@
-namespace MarkdigWpfViewer.ViewModels;
+﻿namespace MarkdigWpfViewer.ViewModels;
 
 using Abstractions;
 

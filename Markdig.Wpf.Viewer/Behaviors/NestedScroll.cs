@@ -1,4 +1,4 @@
-namespace MarkdigWpfViewer.Behaviors;
+﻿namespace MarkdigWpfViewer.Behaviors;
 
 using System.Windows;
 using System.Windows.Controls;

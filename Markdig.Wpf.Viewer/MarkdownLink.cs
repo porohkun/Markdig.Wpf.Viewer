@@ -1,4 +1,4 @@
-namespace MarkdigWpfViewer;
+﻿namespace MarkdigWpfViewer;
 
 using System.Windows;
 using System.Windows.Input;
